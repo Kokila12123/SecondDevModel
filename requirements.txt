@@ -1,0 +1,5 @@
+ultralytics
+transformers
+pillow
+scikit-learn
+pandas

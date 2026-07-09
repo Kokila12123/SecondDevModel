@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# PyTorch/YOLO training runs and checkpoints
+runs/
+*.pt
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Output videos/images
+output/
+
+# IDE settings
+.vscode/
+.idea/
+.agents/
