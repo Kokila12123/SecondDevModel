@@ -8,8 +8,8 @@ from ultralytics import YOLO
 from transformers import CLIPProcessor, CLIPModel
 
 # Define paths for the models
-CLASSIFIER_PATH = "C:/Users/yashw/.gemini/antigravity/scratch/trash_detection/runs/classify/road_trash_project/road_classifier/weights/best.pt"
-DETECTOR_PATH = "C:/Users/yashw/.gemini/antigravity/scratch/trash_detection/runs/detect/road_trash_project/garbage_detector/weights/best.pt"
+CLASSIFIER_PATH = "weights/road_classifier.pt"
+DETECTOR_PATH = "weights/garbage_detector.pt"
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 
 # Zero-shot classes and prompts

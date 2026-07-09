@@ -3,15 +3,8 @@ venv/
 .venv/
 env/
 
-# PyTorch/YOLO training runs and checkpoints
+# PyTorch/YOLO training runs and checkpoints (ignoring all training logs/checkpoints)
 runs/
-*.pt
-
-# Python caches
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
 
 # Output videos/images
 output/
