@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from PIL import Image
 import io
+import tensorflow as tf
 from flask import Flask, request, jsonify, render_template_string
 from inference import load_pipeline, TRASH_CLASSES, CLIP_PROMPTS
 
@@ -14,7 +15,16 @@ app = Flask(__name__)
 
 # Load pipeline models globally
 print("Initializing AI Pipeline for Web Server...")
-classifier, detector, clip_model, clip_processor, device = load_pipeline()
+# We discard the old YOLO classifier and load our new custom TFLite model
+_, detector, clip_model, clip_processor, device = load_pipeline()
+
+tflite_model_path = "outputs/road_cleanliness.tflite"
+print(f"Loading custom TFLite Road Classifier from {tflite_model_path}...")
+interpreter = tf.lite.Interpreter(model_path=tflite_model_path)
+interpreter.allocate_tensors()
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
 print("AI Pipeline loaded successfully!")
 
 HTML_TEMPLATE = """
@@ -439,24 +449,30 @@ def process_frame_route():
         rgb_frame = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2RGB)
         pil_image = Image.fromarray(rgb_frame)
         
-        # 1. Stage 1: Road Classification
-        cls_results = classifier.predict(source=pil_image, verbose=False)
-        probs = cls_results[0].probs
-        class_id = probs.top1
-        road_class = cls_results[0].names[class_id]
-        confidence = probs.top1conf.item()
+        # 1. Stage 1: Road Classification (using our new custom TFLite model)
+        resized_frame = cv2.resize(rgb_frame, (224, 224))
+        input_data = np.expand_dims(np.array(resized_frame, dtype=np.float32), axis=0)
+
+        interpreter.set_tensor(input_details[0]['index'], input_data)
+        interpreter.invoke()
+        predictions = interpreter.get_tensor(output_details[0]['index'])[0]
+
+        best_idx = np.argmax(predictions)
+        labels = ["Clean", "Slightly_Dirty", "Very_Dirty"]
+        road_class = labels[best_idx]
+        confidence = float(predictions[best_idx])
         
         road_class_map = {
-            "CleanRoad": "Clean Road",
-            "SligthlyDirty": "Slightly Dirty Road",
-            "VeryDirty": "Very Dirty Road"
+            "Clean": "Clean Road",
+            "Slightly_Dirty": "Slightly Dirty Road",
+            "Very_Dirty": "Very Dirty Road"
         }
         road_class_str = road_class_map.get(road_class, road_class)
         
         detections = []
         
         # 2. Stage 2 & 3: Run detection/classification if road is dirty
-        if road_class != "CleanRoad":
+        if road_class != "Clean":
             det_results = detector.predict(source=pil_image, conf=0.20, verbose=False) # slightly lower threshold for web stream
             boxes = det_results[0].boxes
             

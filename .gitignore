@@ -8,6 +8,7 @@ runs/
 
 # Output videos/images
 output/
+captured_images/
 
 # IDE settings
 .vscode/
