@@ -202,8 +202,8 @@ def train_gan_for_class(class_name, train_dir, output_root, epochs=50, batch_siz
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Train FastGAN on road cleanliness images.")
-    parser.add_argument("--train_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Split/train", help="Path to split train folder")
-    parser.add_argument("--output_root", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs", help="Root outputs directory")
+    parser.add_argument("--train_dir", type=str, default="datasets/RoadDataset_Split/train", help="Path to split train folder")
+    parser.add_argument("--output_root", type=str, default="outputs", help="Root outputs directory")
     parser.add_argument("--class_name", type=str, default="all", choices=["all", "Clean", "Slightly_Dirty", "Very_Dirty"], help="Class to train GAN for (or 'all')")
     parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size")

@@ -116,9 +116,9 @@ def evaluate_model(model_path, dataset_dir, output_dir, batch_size=32):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Evaluate trained road cleanliness classifier.")
-    parser.add_argument("--model", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs/best_model.keras", help="Path to best classifier model file")
-    parser.add_argument("--dataset_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Final", help="Path to final dataset split folder")
-    parser.add_argument("--output_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs", help="Outputs root path")
+    parser.add_argument("--model", type=str, default="outputs/best_model.keras", help="Path to best classifier model file")
+    parser.add_argument("--dataset_dir", type=str, default="datasets/RoadDataset_Final", help="Path to final dataset split folder")
+    parser.add_argument("--output_dir", type=str, default="outputs", help="Outputs root path")
     parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
     args = parser.parse_args()
     

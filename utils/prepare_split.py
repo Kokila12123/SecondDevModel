@@ -58,8 +58,8 @@ def split_dataset(src_dir, dest_dir, seed=42):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Split real road dataset into train/val/test splits.")
-    parser.add_argument("--src", type=str, default="C:/Users/Kokila/.antigravity-ide/aimodel/RoadDataset/RoadDataset", help="Source directory")
-    parser.add_argument("--dest", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Split", help="Destination split directory")
+    parser.add_argument("--src", type=str, default="C:/Users/yashw/.gemini/antigravity/scratch/RoadDataset", help="Source directory")
+    parser.add_argument("--dest", type=str, default="datasets/RoadDataset_Split", help="Destination split directory")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     args = parser.parse_args()
     

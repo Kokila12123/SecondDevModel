@@ -39,9 +39,9 @@ def merge_datasets(split_dir, gen_dir, final_dir):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Merge real split dataset with synthetic generated images.")
-    parser.add_argument("--split_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Split", help="Path to split dataset")
-    parser.add_argument("--gen_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Generated", help="Path to generated synthetic images")
-    parser.add_argument("--final_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Final", help="Path to save merged final dataset")
+    parser.add_argument("--split_dir", type=str, default="datasets/RoadDataset_Split", help="Path to split dataset")
+    parser.add_argument("--gen_dir", type=str, default="datasets/RoadDataset_Generated", help="Path to generated synthetic images")
+    parser.add_argument("--final_dir", type=str, default="datasets/RoadDataset_Final", help="Path to save merged final dataset")
     args = parser.parse_args()
     
     merge_datasets(args.split_dir, args.gen_dir, args.final_dir)

@@ -92,8 +92,8 @@ def convert_to_tflite(keras_model_path, tflite_output_path):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Convert trained road classifier model to TensorFlow Lite.")
-    parser.add_argument("--model", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs/best_model.keras", help="Path to best classifier model file")
-    parser.add_argument("--output", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs/road_cleanliness.tflite", help="Path to save output TFLite model")
+    parser.add_argument("--model", type=str, default="outputs/best_model.keras", help="Path to best classifier model file")
+    parser.add_argument("--output", type=str, default="outputs/road_cleanliness.tflite", help="Path to save output TFLite model")
     args = parser.parse_args()
     
     convert_to_tflite(args.model, args.output)

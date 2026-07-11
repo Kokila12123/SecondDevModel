@@ -81,8 +81,8 @@ def generate_synthetic_images(weights_dir, dest_root, count_per_class=200, nz=10
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Generate synthetic images from trained generators.")
-    parser.add_argument("--weights_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs/checkpoints", help="Path to GAN checkpoints")
-    parser.add_argument("--dest", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Generated", help="Path to save generated dataset")
+    parser.add_argument("--weights_dir", type=str, default="outputs/checkpoints", help="Path to GAN checkpoints")
+    parser.add_argument("--dest", type=str, default="datasets/RoadDataset_Generated", help="Path to save generated dataset")
     parser.add_argument("--count", type=int, default=200, help="Number of images to generate per class (150-250)")
     parser.add_argument("--nz", type=int, default=100, help="Latent space dimension")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")

@@ -160,8 +160,8 @@ def train_classifier(dataset_dir, output_dir, model_name="EfficientNet-B0", batc
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Train road cleanliness classifier with transfer learning.")
-    parser.add_argument("--dataset_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/datasets/RoadDataset_Final", help="Path to final merged dataset")
-    parser.add_argument("--output_dir", type=str, default="C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs", help="Path to save checkpoints and outputs")
+    parser.add_argument("--dataset_dir", type=str, default="datasets/RoadDataset_Final", help="Path to final merged dataset")
+    parser.add_argument("--output_dir", type=str, default="outputs", help="Path to save checkpoints and outputs")
     parser.add_argument("--model_name", type=str, default="EfficientNet-B0", choices=["EfficientNet-B0", "MobileNetV3", "EfficientNetV2B0"], help="Backbone model name")
     parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
     parser.add_argument("--epochs_stage1", type=int, default=20, help="Epochs for training head")
