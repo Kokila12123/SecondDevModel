@@ -70,13 +70,17 @@ def train_classifier(dataset_dir, output_dir, model_name="EfficientNet-B0", batc
         seed=seed
     )
     
+    classes = train_ds.class_names
+    num_classes = len(classes)
+    print(f"Detected {num_classes} classes from training directories: {classes}")
+    
     # Prefetch dataset to optimize CPU/GPU memory pipeline
     AUTOTUNE = tf.data.AUTOTUNE
     train_ds = train_ds.prefetch(buffer_size=AUTOTUNE)
     val_ds = val_ds.prefetch(buffer_size=AUTOTUNE)
     
     # Build model
-    model, base_model = build_classifier(model_name=model_name, num_classes=3, img_size=224)
+    model, base_model = build_classifier(model_name=model_name, num_classes=num_classes, img_size=224)
     model.summary()
     
     # Create outputs folder structure
@@ -153,7 +157,7 @@ def train_classifier(dataset_dir, output_dir, model_name="EfficientNet-B0", batc
     # Save class names label map
     label_path = os.path.join(output_dir, "labels.txt")
     with open(label_path, "w") as f:
-        f.write("\n".join(["Clean", "Slightly_Dirty", "Very_Dirty"]))
+        f.write("\n".join(classes))
         
     print(f"Label map saved to {label_path}")
 

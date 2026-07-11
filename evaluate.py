@@ -39,7 +39,13 @@ def evaluate_model(model_path, dataset_dir, output_dir, batch_size=32):
     
     # We will evaluate on both validation and test datasets
     splits = ["validation", "test"]
-    classes = ["Clean", "Slightly_Dirty", "Very_Dirty"]
+    # Load class names dynamically
+    label_path = os.path.join(output_dir, "labels.txt")
+    if os.path.exists(label_path):
+        with open(label_path, "r") as f:
+            classes = [line.strip() for line in f.read().split("\n") if line.strip()]
+    else:
+        classes = ["Clean", "Slightly_Dirty", "Very_Dirty"]
     
     reports_dir = os.path.join(output_dir, "reports")
     graphs_dir = os.path.join(output_dir, "graphs")
