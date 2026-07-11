@@ -5,11 +5,18 @@ import cv2
 import numpy as np
 from PIL import Image
 from ultralytics import YOLO
+import tensorflow as tf
 from transformers import CLIPProcessor, CLIPModel
 
 # Define paths for the models
-CLASSIFIER_PATH = "weights/road_classifier.pt"
+CLASSIFIER_PATH = "outputs/best_model.keras"
+if not os.path.exists(CLASSIFIER_PATH):
+    CLASSIFIER_PATH = "C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs/best_model.keras"
+
 DETECTOR_PATH = "weights/garbage_detector.pt"
+if not os.path.exists(DETECTOR_PATH):
+    DETECTOR_PATH = "C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/weights/garbage_detector.pt"
+
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 
 # Zero-shot classes and prompts
@@ -28,11 +35,11 @@ def load_pipeline():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Loading pipeline using device: {device.upper()}")
     
-    # Load Stage 1 Classifier
+    # Load Stage 1 Keras Classifier
     if not os.path.exists(CLASSIFIER_PATH):
         raise FileNotFoundError(f"Classifier model not found at {CLASSIFIER_PATH}. Please train the classifier first.")
-    print("Loading Road Classifier...")
-    classifier = YOLO(CLASSIFIER_PATH)
+    print("Loading Road Classifier (Keras)...")
+    classifier = tf.keras.models.load_model(CLASSIFIER_PATH)
     
     # Load Stage 2 Detector
     if not os.path.exists(DETECTOR_PATH):
@@ -63,17 +70,58 @@ def run_pipeline(image_path, classifier, detector, clip_model, clip_processor, d
     cv_image = cv2.imread(image_path)
     h_img, w_img, _ = cv_image.shape
     
-    # 2. Stage 1: Road Classification
-    print("\n[Stage 1] Classifying road state...")
-    cls_results = classifier.predict(source=pil_image, verbose=False)
+    # --------------------------------------------------------
+    # [Verification Stage] Zero-shot Road vs Non-Road check
+    # --------------------------------------------------------
+    print("\n[Verification] Verifying if image contains a road/street...")
+    road_verification_prompts = [
+        "a photo of a road, street, highway, asphalt pavement, or public street view",
+        "a photo of an indoor room, house interior, office, human face, sky view, indoor wall, furniture, tree close-up, animal, or anything other than a road"
+    ]
     
-    # YOLO classification results
-    probs = cls_results[0].probs
-    class_id = probs.top1
-    road_class = cls_results[0].names[class_id]
-    confidence = probs.top1conf.item()
+    inputs_road = clip_processor(text=road_verification_prompts, images=pil_image, return_tensors="pt", padding=True).to(device)
+    with torch.no_grad():
+        outputs_road = clip_model(**inputs_road)
+        logits_per_image_road = outputs_road.logits_per_image
+        probs_road = logits_per_image_road.softmax(dim=-1).cpu().numpy()[0]
+        
+    road_prob = probs_road[0]
+    non_road_prob = probs_road[1]
     
-    # Standardize names
+    print(f"Road probability: {road_prob:.2%}, Non-road probability: {non_road_prob:.2%}")
+    
+    if non_road_prob > road_prob:
+        print("Verification Failed: The input image does not appear to contain a road or street.")
+        # Draw error message on visualization image
+        cv2.putText(cv_image, "No road detected in the image", (20, h_img // 2),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        out_path = os.path.join(output_dir, f"result_{os.path.basename(image_path)}")
+        cv2.imwrite(out_path, cv_image)
+        print(f"Saved visualization to: {out_path}")
+        return {
+            "error": "No road detected in the image",
+            "road_status": None,
+            "detections": []
+        }
+        
+    print("Verification Passed: Road detected. Executing classification pipeline...")
+    
+    # 2. Stage 1: Road Classification (Keras Model)
+    print("\n[Stage 1] Classifying road cleanliness...")
+    img_resized = pil_image.resize((224, 224))
+    img_array = np.array(img_resized, dtype=np.float32)
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    
+    # Predict using Keras model
+    preds = classifier.predict(img_array, verbose=0)
+    class_id = np.argmax(preds[0])
+    confidence = preds[0][class_id]
+    
+    # Map alphabetical Keras class indexes: 0: Clean, 1: Slightly_Dirty, 2: Very_Dirty
+    # Map to legacy class name keys for downstream stage compatibility
+    road_class = ["CleanRoad", "SligthlyDirty", "VeryDirty"][class_id]
+    
+    # Standardize names for display
     road_class_map = {
         "CleanRoad": "Clean Road",
         "SligthlyDirty": "Slightly Dirty Road",
@@ -156,7 +204,6 @@ def run_pipeline(image_path, classifier, detector, clip_model, clip_processor, d
         })
         
         # Draw bounding boxes and text
-        # Define color based on category
         color_map = {
             "plastic": (255, 0, 0),         # Blue
             "dry waste": (0, 255, 255),      # Yellow
