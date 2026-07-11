@@ -621,4 +621,4 @@ def upload_snapshot():
 
 if __name__ == "__main__":
     # Host on 0.0.0.0 so that other devices (like your phone) on the same network can access it
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5173, debug=False, ssl_context='adhoc')
