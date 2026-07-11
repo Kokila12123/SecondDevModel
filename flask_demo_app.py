@@ -16,8 +16,8 @@ IMAGE_DIR = "captured_images"
 METADATA_FILE = os.path.join(IMAGE_DIR, "metadata.json")
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
-# Load TFLite Model
-MODEL_PATH = "outputs/road_cleanliness.tflite"
+# Load Keras Model
+MODEL_PATH = "outputs/best_model.keras"
 labels = ["Clean", "Slightly_Dirty", "Very_Dirty"]
 label_map = {
     "Clean": "Clean Road",
@@ -25,11 +25,8 @@ label_map = {
     "Very_Dirty": "Very Dirty Road"
 }
 
-print("Loading TFLite model...")
-interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
-interpreter.allocate_tensors()
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+print(f"Loading custom Keras Road Classifier from {MODEL_PATH}...")
+classifier_model = tf.keras.models.load_model(MODEL_PATH)
 print("Model loaded successfully!")
 
 # Load metadata helper
@@ -581,10 +578,8 @@ def upload_snapshot():
         resized_frame = cv2.resize(rgb_frame, (224, 224))
         input_data = np.expand_dims(np.array(resized_frame, dtype=np.float32), axis=0)
 
-        # Run TFLite inference
-        interpreter.set_tensor(input_details[0]['index'], input_data)
-        interpreter.invoke()
-        predictions = interpreter.get_tensor(output_details[0]['index'])[0]
+        # Run Keras inference
+        predictions = classifier_model.predict(input_data, verbose=0)[0]
 
         # Calculate prediction details
         best_idx = np.argmax(predictions)
