@@ -18,11 +18,20 @@ os.makedirs(IMAGE_DIR, exist_ok=True)
 
 # Load Keras Model
 MODEL_PATH = "outputs/best_model.keras"
-labels = ["Clean", "Slightly_Dirty", "Very_Dirty"]
+
+# Load labels dynamically
+labels_file = "outputs/labels.txt"
+if os.path.exists(labels_file):
+    with open(labels_file, "r") as f:
+        labels = [line.strip() for line in f.read().split("\n") if line.strip()]
+else:
+    labels = ["Clean", "Slightly_Dirty", "Very_Dirty", "Not_a_Road"]
+
 label_map = {
     "Clean": "Clean Road",
     "Slightly_Dirty": "Slightly Dirty Road",
-    "Very_Dirty": "Very Dirty Road"
+    "Very_Dirty": "Very Dirty Road",
+    "Not_a_Road": "Not a Road"
 }
 
 print(f"Loading custom Keras Road Classifier from {MODEL_PATH}...")
@@ -182,6 +191,7 @@ DASHBOARD_TEMPLATE = """
         .flag.clean { background-color: rgba(0, 230, 118, 0.15); color: var(--clean-color); }
         .flag.slightly { background-color: rgba(255, 145, 0, 0.15); color: var(--slightly-color); }
         .flag.very { background-color: rgba(255, 23, 68, 0.15); color: var(--very-color); }
+        .flag.notaroad { background-color: rgba(138, 143, 157, 0.15); color: #8a8f9d; }
         
         .time-label {
             font-size: 0.8rem;
@@ -496,8 +506,10 @@ MOBILE_TEMPLATE = """
                         resClass.style.color = "#00e676";
                     } else if (result.class === "Slightly_Dirty") {
                         resClass.style.color = "#ff9100";
-                    } else {
+                    } else if (result.class === "Very_Dirty") {
                         resClass.style.color = "#ff1744";
+                    } else {
+                        resClass.style.color = "#8a8f9d"; // Gray for Not a Road
                     }
                     
                     loadingDiv.style.display = 'none';
