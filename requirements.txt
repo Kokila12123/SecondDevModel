@@ -1,5 +1,11 @@
-ultralytics
-transformers
-pillow
+torch
+torchvision
+tensorflow
 scikit-learn
+matplotlib
 pandas
+numpy
+pillow
+tqdm
+seaborn
+

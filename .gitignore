@@ -13,3 +13,10 @@ output/
 .vscode/
 .idea/
 .agents/
+
+# Local datasets and output runs
+datasets/
+outputs/
+road_data_split/
+road_trash_project/
+
