@@ -9,6 +9,8 @@ runs/
 # Output videos/images
 output/
 captured_images/
+pinggy_err.txt
+pinggy_out.txt
 
 # IDE settings
 .vscode/
