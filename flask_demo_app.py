@@ -627,30 +627,32 @@ def upload_snapshot():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    # Start secure public internet tunnel using pinggy
+    # Start secure public internet tunnel using pinggy (only when running locally on laptop)
     public_url = None
-    try:
-        import pinggy
-        print("\nStarting secure public HTTPS tunnel for mobile client...")
-        tunnel = pinggy.start_tunnel(forwardto=5173)
-        
-        # Extract the public HTTPS URL from Pinggy
-        for url in tunnel.urls:
-            if url.startswith("https://"):
-                public_url = url
-                break
-                
-        if public_url:
-            print("\n" + "="*80)
-            print("                      PUBLIC INTERNET SHAREABLE LINK")
-            print(" Share this secure HTTPS link with your teacher / friends to test on their phones:")
-            print(f" {public_url}/mobile")
-            print("="*80 + "\n")
-        else:
-            print("Warning: Could not extract public HTTPS URL from Pinggy.")
-    except Exception as e:
-        print(f"Could not start Pinggy tunnel: {e}")
-        print("You can still use your local Wi-Fi network link.")
+    if "SPACE_ID" not in os.environ:
+        try:
+            import pinggy
+            print("\nStarting secure public HTTPS tunnel for mobile client...")
+            tunnel = pinggy.start_tunnel(forwardto=5173)
+            
+            # Extract the public HTTPS URL from Pinggy
+            for url in tunnel.urls:
+                if url.startswith("https://"):
+                    public_url = url
+                    break
+                    
+            if public_url:
+                print("\n" + "="*80)
+                print("                      PUBLIC INTERNET SHAREABLE LINK")
+                print(" Share this secure HTTPS link with your teacher / friends to test on their phones:")
+                print(f" {public_url}/mobile")
+                print("="*80 + "\n")
+            else:
+                print("Warning: Could not extract public HTTPS URL from Pinggy.")
+        except Exception as e:
+            print(f"Could not start Pinggy tunnel: {e}")
+            print("You can still use your local Wi-Fi network link.")
 
-    # Run local Flask server on HTTP (Pinggy handles the HTTPS encryption externally)
-    app.run(host="0.0.0.0", port=5173, debug=False)
+    # Run Flask server dynamically (uses port 7860 on Hugging Face, or 5173 locally)
+    port = int(os.environ.get("PORT", 5173))
+    app.run(host="0.0.0.0", port=port, debug=False)

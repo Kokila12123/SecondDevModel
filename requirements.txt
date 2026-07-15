@@ -8,4 +8,9 @@ numpy
 pillow
 tqdm
 seaborn
-
+flask
+opencv-python-headless
+transformers
+ultralytics
+pinggy
+gunicorn
