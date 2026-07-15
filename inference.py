@@ -10,12 +10,7 @@ from transformers import CLIPProcessor, CLIPModel
 
 # Define paths for the models
 CLASSIFIER_PATH = "outputs/best_model.keras"
-if not os.path.exists(CLASSIFIER_PATH):
-    CLASSIFIER_PATH = "C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/outputs/best_model.keras"
-
 DETECTOR_PATH = "weights/garbage_detector.pt"
-if not os.path.exists(DETECTOR_PATH):
-    DETECTOR_PATH = "C:/Users/Kokila/.gemini/antigravity/scratch/SecondDevModel/weights/garbage_detector.pt"
 
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 

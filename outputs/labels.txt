@@ -1,0 +1,4 @@
+Clean
+Not_a_Road
+Slightly_Dirty
+Very_Dirty

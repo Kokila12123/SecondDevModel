@@ -20,6 +20,9 @@ pinggy_out.txt
 # Local datasets and output runs
 datasets/
 outputs/
+!outputs/best_model.keras
+!outputs/road_cleanliness.tflite
+!outputs/labels.txt
 road_data_split/
 road_trash_project/
 
