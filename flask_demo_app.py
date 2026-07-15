@@ -627,31 +627,51 @@ def upload_snapshot():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    # Start secure public internet tunnel using pinggy (only when running locally on laptop)
+    # Start secure public internet tunnel (only when running locally on laptop)
     public_url = None
     if "SPACE_ID" not in os.environ:
-        try:
-            import pinggy
-            print("\nStarting secure public HTTPS tunnel for mobile client...")
-            tunnel = pinggy.start_tunnel(forwardto=5173)
-            
-            # Extract the public HTTPS URL from Pinggy
-            for url in tunnel.urls:
-                if url.startswith("https://"):
-                    public_url = url
-                    break
-                    
-            if public_url:
-                print("\n" + "="*80)
-                print("                      PUBLIC INTERNET SHAREABLE LINK")
-                print(" Share this secure HTTPS link with your teacher / friends to test on their phones:")
-                print(f" {public_url}/mobile")
-                print("="*80 + "\n")
-            else:
-                print("Warning: Could not extract public HTTPS URL from Pinggy.")
-        except Exception as e:
-            print(f"Could not start Pinggy tunnel: {e}")
-            print("You can still use your local Wi-Fi network link.")
+        # 1. Try Ngrok first (requires ngrok_token.txt in your folder)
+        token_file = "ngrok_token.txt"
+        if os.path.exists(token_file):
+            try:
+                with open(token_file, "r") as f:
+                    token = f.read().strip()
+                if token:
+                    from pyngrok import ngrok
+                    print("\nStarting permanent HTTPS tunnel using Ngrok...")
+                    ngrok.set_auth_token(token)
+                    public_url = ngrok.connect(5173).public_url
+                    # Ensure it is HTTPS
+                    if public_url.startswith("http://") and not public_url.startswith("https://"):
+                        public_url = public_url.replace("http://", "https://")
+            except Exception as e:
+                print(f"Could not start Ngrok tunnel: {e}")
+                print("Make sure your token is correct and not used elsewhere.")
+
+        # 2. Fallback to Pinggy if Ngrok is not configured or fails
+        if not public_url:
+            try:
+                import pinggy
+                print("\nStarting temporary HTTPS tunnel using Pinggy...")
+                tunnel = pinggy.start_tunnel(forwardto=5173)
+                
+                # Extract the public HTTPS URL from Pinggy
+                for url in tunnel.urls:
+                    if url.startswith("https://"):
+                        public_url = url
+                        break
+            except Exception as e:
+                print(f"Could not start Pinggy tunnel: {e}")
+                print("You can still use your local Wi-Fi network link.")
+
+        if public_url:
+            print("\n" + "="*80)
+            print("                      PUBLIC INTERNET SHAREABLE LINK")
+            print(" Share this secure HTTPS link with your teacher / friends to test on their phones:")
+            print(f" {public_url}/mobile")
+            print("="*80 + "\n")
+        else:
+            print("Warning: Could not start any public tunnel. Using local network only.")
 
     # Run Flask server dynamically (uses port 7860 on Hugging Face, or 5173 locally)
     port = int(os.environ.get("PORT", 5173))
