@@ -3,6 +3,15 @@ venv/
 .venv/
 env/
 
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# YOLO training caches
+*.cache
+
 # PyTorch/YOLO training runs and checkpoints (ignoring all training logs/checkpoints)
 runs/
 
